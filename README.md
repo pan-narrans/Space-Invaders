@@ -1,2 +1,5 @@
 # Space-Invaders
-Space Invaders done in Java, played through the console.
+
+- [Space-Invaders](#space-invaders)
+
+Space Invaders done in Java-17, played through the console.
