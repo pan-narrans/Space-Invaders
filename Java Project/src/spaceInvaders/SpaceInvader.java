@@ -18,7 +18,6 @@ public class SpaceInvader implements Constants {
   private static boolean inSpaceInvaders;
   private static boolean inGame;
 
-  // TODO: change head for gameover on gameover @class Board()
   // TODO: adjust value of constants
 
   public SpaceInvader() {

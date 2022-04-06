@@ -161,4 +161,8 @@ public class GameController implements Constants {
     return difficulty;
   }
 
+  boolean getGameOver() {
+    return gameOver;
+  }
+
 }

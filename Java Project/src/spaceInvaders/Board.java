@@ -16,14 +16,16 @@ public class Board implements Constants {
    */
   private char[][] playBoard = new char[BOARD_SIZE_Y][BOARD_SIZE_X];
   private GameController gc;
+  private String headText;
 
   private enum COLOR {
-    RED, GREEN, DEFAULT
+    RED, GREEN, YELLOW, DEFAULT
   }
 
   Board(GameController gc) {
     this.gc = gc;
     resetBoard();
+    resetHeadText();
   }
 
   /**
@@ -43,7 +45,7 @@ public class Board implements Constants {
    * Prints the "SPACE INVADERS" header, adjusted to the board width.
    */
   protected void printHead() {
-    int num = BOARD_SIZE_X * 2 + 1 - 16;
+    int num = BOARD_SIZE_X * 2 + 1 - headText.length();
     num /= 2;
 
     // Print ' '
@@ -56,7 +58,12 @@ public class Board implements Constants {
       System.out.print("=");
     }
 
-    System.out.print(" SPACE INVADERS ");
+    if (gc.getGameOver())
+      changeStyle(COLOR.RED);
+
+    System.out.print(headText);
+
+    changeStyle(COLOR.DEFAULT);
 
     // Print '='
     for (int i = 0; i < num; i++) {
@@ -140,6 +147,8 @@ public class Board implements Constants {
       case GREEN:
         ANSI = "\033[1;32m";
         break;
+      case YELLOW:
+        ANSI = "\033[1;33m";
       case DEFAULT:
       default:
         break;
@@ -158,20 +167,32 @@ public class Board implements Constants {
     }
   }
 
+  private void resetHeadText() {
+    headText = " SPACE INVADERS ";
+  }
+
   protected void printScore() {
-    System.out.println("Score = " + gc.getScore());
+    System.out.print("Score = ");
+    changeStyle(COLOR.YELLOW);
+    System.out.println(gc.getScore());
+    changeStyle(COLOR.DEFAULT);
   }
 
   private void printDifficulty() {
-    if (gc.getDifficulty() == MAX_DIFFICULTY)
-      System.out.println("Difficulty = MAX");
-    else
+    if (gc.getDifficulty() == MAX_DIFFICULTY) {
+      System.out.print("Difficulty = ");
+      changeStyle(COLOR.RED);
+      System.out.println("MAX");
+      changeStyle(COLOR.DEFAULT);
+    } else
       System.out.println("Difficulty = " + gc.getDifficulty());
   }
 
   protected void printGameOver() {
-    System.out.println("=== GAME OVER ===");
+    headText = " GAME OVER ";
+    changeStyle(COLOR.RED);
     System.out.println("press 'd' to continue ");
+    changeStyle(COLOR.DEFAULT);
   }
 
 }
