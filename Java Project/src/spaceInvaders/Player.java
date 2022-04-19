@@ -16,10 +16,16 @@ public class Player extends GameObject {
     speedDelay = SPD_PLAYER;
   }
 
+  /**
+   * Moves the player to the left, staying within the bounds of the board.
+   */
   public void moveLeft() {
     position[0] = (position[0] == Board.BOARD_SIZE_X - 1) ? position[0] : position[0] + 1;
   }
 
+  /**
+   * Moves the player to the right, staying within the bounds of the board.
+   */
   public void moveRight() {
     position[0] = (position[0] == 0) ? position[0] : position[0] - 1;
   }
@@ -40,9 +46,11 @@ public class Player extends GameObject {
     return canShoot;
   }
 
+  /**
+   * Instantiates a new Bullet object and sets {@link #canShoot} to false.
+   */
   protected Bullet shoot() {
     canShoot = false;
-    // return new Bullet(new int[] { position[0], position[1] - 1 });
     return new Bullet(position, -1);
   }
 

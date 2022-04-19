@@ -10,12 +10,12 @@ public interface Constants {
   // Player
   public final char SPR_PLAYER = 'X';
   public final int SPD_PLAYER = 1;
-  public final int PLR_SHOOT_DELAY = 2;
+  public final int PLR_SHOOT_DELAY = 5;
 
   // Enemy
   public final char SPR_ENEMY = 'Y';
   public final int SPD_ENEMY = 15;
-  public final int SPD_ENEMY_MIN = 5;
+  public final int SPD_ENEMY_MIN = 10;
   public final int PT_ENEMY = 5;
 
   // Bullet
