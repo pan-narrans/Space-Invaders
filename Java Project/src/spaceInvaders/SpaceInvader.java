@@ -14,6 +14,7 @@ public class SpaceInvader implements Constants {
 
   private static Menu menu;
   private static GameController gameController;
+  private static HighScoreController highScores;
 
   private static boolean inSpaceInvaders;
   private static boolean inGame;
@@ -26,6 +27,7 @@ public class SpaceInvader implements Constants {
       e.printStackTrace();
     }
 
+    highScores = new HighScoreController();
     menu = new Menu(this);
   }
 
