@@ -1,128 +1,167 @@
 package spaceInvaders;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.Locale;
-import java.util.Scanner;
 
-import javax.print.DocFlavor.STRING;
+import dataManagement.DatabaseManager;
+import dataManagement.FilesManager;
 
 public class HighScoreController {
   // Database
   private final String DB_NAME = "space-invaders";
-  private final String DB_TABLE_NAME = "high-scores";
+  private final String DB_TABLE = "high-scores";
   private final String DB_USER = "root";
   private final String DB_PASSWORD = "";
   private boolean dbConnection;
+  private DatabaseManager dbManager;
 
   // File
   private final String FILE_NAME = "high-scores";
-  private final String FILE_PATH = "Java Project\\res\\";
-  private final String FILE = FILE_PATH + FILE_NAME;
+  private final String FILE_PATH = "Java Project\\res\\" + FILE_NAME;
+  private FilesManager fileManager;
 
   // High Scores
-  private final int SCORES_SIZE = 5;
-  private String[][] scores = new String[SCORES_SIZE][2];
+  private final int SCORES_NUMBER = 5;
+  private final int SCORES_NAME_SIZE = 6;
+  private String[][] scores = new String[SCORES_NUMBER][2];
 
   public HighScoreController() {
-    createFile();
+    fileManager = new FilesManager();
+    fileManager.createFile(FILE_PATH);
+    setScores(retrieveScores());
   }
 
   /**
-   * Initializes the scores array.
-   * First it'll try to get them from the database, if that's not possible, it'll
-   * try to retrieve them from a 'high-score.txt' file.
-   * As a last resort, it'll generate a set of dummy values.
+   * Atspacingts to retrieve a saved scores array, should that fail, it will
+   * return a
+   * dummy array.
+   * 
+   * <ul>
+   * <li>First it'll try to get the scores from the database.
+   * <li>If that's not possible, it'll * try to retrieve them from the
+   * 'high-score.txt' file.
+   * <li>As a last resort, it'll generate a set of dummy values.
+   * </ul>
+   * 
+   * @return a score array
    */
-  public void initScores() {
+  private String[][] retrieveScores() {
     String[][] values;
 
     if (false)
-      ;
-    else if (!fileIsEmpty())
-      values = readFromFile();
+      values = retrieveScoreFromDataBase();
+    else if (!fileManager.fileIsEmpty(FILE_PATH))
+      values = retrieveScoreFromFile();
     else
       values = generateMockValues();
-
-    setScores(values);
-  }
-
-  public void addScore() {
-
-  }
-
-  public void setScores(String[][] values) {
-    scores = values.clone();
-  }
-
-  public String[][] getScores() {
-    return scores;
-  }
-
-  public String[][] readFromFile() {
-    String[][] values = new String[SCORES_SIZE][2];
-    Scanner in = null;
-    String result = "";
-    int counter = 0;
-
-    try {
-      in = new Scanner(new FileReader(FILE));
-      in.useLocale(Locale.ROOT);
-
-      // lee el fichero palabra a palabra
-      while (in.hasNext() && counter < SCORES_SIZE) {
-        result = in.nextLine();
-        values[counter][0] = result.split(" ")[0];
-        values[counter][1] = result.split(" ")[1];
-      }
-    } catch (Exception e) {
-      System.out.println(e);
-    } finally {
-      if (in != null) {
-        in.close();
-      }
-    }
 
     return values;
   }
 
-  public void saveToFile() {
-    PrintWriter out = null;
-
-    try {
-      out = new PrintWriter(new FileWriter(FILE));
-      for (String[] score : scores) {
-        out.println(score.toString());
-      }
-    } catch (Exception e) {
-      System.out.println(e);
-    } finally {
-      if (out != null)
-        out.close();
-    }
+  /**
+   * @return The scores array.
+   */
+  public String[][] getScores() {
+    return scores;
   }
 
-  public boolean fileIsEmpty() {
-    File file = new File(FILE);
+  /**
+   * Sets the scores array. It'll also update the database and the file.
+   * <p>
+   * If the values array is not composed of valid scores, it'll initialize the
+   * scores array with dummy.
+   * 
+   * @param values The values to set.
+   */
+  public void setScores(String[][] values) {
+    if (validateScores(values))
+      this.scores = values.clone();
+    else
+      this.scores = generateMockValues().clone();
 
-    return file.length() == 0 ? true : false;
+    saveScores(this.scores);
   }
 
-  private void createFile() {
-    try {
-      File file = new File(FILE);
-      if (file.createNewFile())
-        System.out.println("File created.");
-      else
-        System.out.println("File already exists.");
+  /** Saves the scores array to the database and the file. */
+  public void saveScores(String[][] values) {
+    // TODO: Save the scores to the database
+    fileManager.writeFile(FILE_PATH, values);
+  }
 
+  /**
+   * @return The scores array from the {@link #FILE_PATH}.
+   */
+  private String[][] retrieveScoreFromFile() {
+    String[][] result;
+
+    try {
+      result = (String[][]) fileManager.readFile(FILE_PATH);
     } catch (Exception e) {
-      System.out.println("An error occurred.");
+      result = generateMockValues();
     }
+
+    return result;
+  }
+
+  // TODO: Get the values from the database
+  private String[][] retrieveScoreFromDataBase() {
+    String[][] result = null;
+    return result;
+  }
+
+  /**
+   * Validates the scores array, looking for invalid values and inconsistencies.
+   * 
+   * @param values The scores array to validate.
+   * @return True if the scores array is valid, false otherwise.
+   */
+  private boolean validateScores(String[][] values) {
+
+    // Check if the array is of the correct size
+    if (values.length != SCORES_NUMBER) {
+      return false;
+    }
+
+    // Score value must be a number
+    for (int i = 0; i < values.length; i++) {
+      if (values[i][1].matches("[a-zA-Z]"))
+        return false;
+    }
+
+    // Check if the scores are sorted
+    for (int i = 0; i < values.length - 1; i++) {
+      if (Integer.parseInt(values[i][1]) < Integer.parseInt(values[i + 1][1]))
+        return false;
+    }
+
+    // Check if there are null values
+    for (int i = 0; i < values.length; i++) {
+      if (values[i][0] == null || values[i][1] == null)
+        return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Prints the contents of the high scores matrix.
+   */
+  public void printScores() {
+    StringBuilder sb = new StringBuilder();
+    String highScore = " HIGH SCORES ";
+    int spacing = SCORES_NAME_SIZE - highScore.length() / 2 + 2;
+
+    // Header
+    sb.append("-".repeat(spacing) + highScore + "-".repeat(spacing) + "\n");
+
+    // Loop through the scores array.
+    for (String[] score : scores) {
+      sb.append(String.format("|%-" + SCORES_NAME_SIZE + "s | ", score[0]));
+      sb.append(String.format("%-" + SCORES_NAME_SIZE + "s|", score[1]));
+      sb.append("\n");
+    }
+
+    // Print
+    System.out.println(sb.toString());
   }
 
   /**
@@ -130,9 +169,9 @@ public class HighScoreController {
    * ["PC", "0"]
    */
   private String[][] generateMockValues() {
-    String[][] values = new String[SCORES_SIZE][2];
+    String[][] values = new String[SCORES_NUMBER][2];
 
-    for (int i = 0; i < SCORES_SIZE; i++) {
+    for (int i = 0; i < SCORES_NUMBER; i++) {
       values[i][0] = "PC";
       values[i][1] = "0";
     }
@@ -140,9 +179,58 @@ public class HighScoreController {
     return values;
   }
 
-  public void printScores() {
-    for (int i = 0; i < scores.length; i++) {
-      System.out.println(Arrays.toString(scores[i]));
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  // TODO: Add the high scores functionality
+
+  /**
+   * Checks if a new high score had been achieved.
+   * 
+   * @param values values matrix to check against
+   * @param score  score to check
+   * @return Returns true if its a new high score, false if not
+   */
+  public boolean isNewHighScore(String[][] values, int score) {
+    for (int i = 0; i < values.length; i++) {
+      if (score <= Integer.valueOf(values[i][1]))
+        return true;
     }
+    return false;
   }
+
+  /**
+   * Adds a new record to the array, deleting the last record.
+   * 
+   * @param values High scores matrix.
+   * @param name   Name to put on the wall of fame.
+   * @param score  Number of moves taken to beat the game.
+   * @return Array with the new high score included
+   */
+  public String[][] addNewHighScore(String[][] values, String name, int score) {
+    int position = 0;
+
+    // Finds the position the new score would hold in the ranking
+    while (Integer.valueOf(values[position][1]) < score) {
+      position++;
+    }
+
+    // Shift all items one position from the bottom up,
+    // ending in the selected position
+    for (int i = values.length - 1; i > position; i--) {
+      values[i][0] = values[i - 1][0];
+      values[i][1] = values[i - 1][1];
+    }
+
+    // Adds the new high score
+    values[position][0] = name;
+    values[position][1] = Integer.toString(score);
+
+    return values;
+  }
+
 }
