@@ -42,7 +42,7 @@ public class EnemyController implements Constants {
   public void update() {
     if (enemies.isEmpty()) {
       gc.increaseDifficulty();
-      increaseSpeed();
+      updateSpeed();
       direction = 1;
       createSwarm(getRandomTemplate());
     }
@@ -53,8 +53,8 @@ public class EnemyController implements Constants {
     objectCleanUp();
   }
 
-  private void increaseSpeed() {
-    speedDelay = (speedDelay == SPD_ENEMY_MIN) ? speedDelay : speedDelay - gc.getDifficulty();
+  private void updateSpeed() {
+    speedDelay = speedDelay - gc.getDifficulty();
   }
 
   private void objectCleanUp() {
@@ -65,6 +65,11 @@ public class EnemyController implements Constants {
     }
   }
 
+  /**
+   * Auto updates a counter value to determine if the swarm can move.
+   * 
+   * @return true if the swarm can move
+   */
   private boolean canMove() {
     counter--;
     if (counter == 0) {
@@ -93,6 +98,11 @@ public class EnemyController implements Constants {
     }
   }
 
+  /**
+   * Checks if the swarm of enemies is out of bounds.
+   * 
+   * @return true if the swarm is out of bounds, false otherwise.
+   */
   private boolean swarmIsOutOfBounds() {
     for (Enemy enemy : enemies) {
       if (enemy.isOutOfBounds() && enemy.hasEnteredBoard)
@@ -113,7 +123,7 @@ public class EnemyController implements Constants {
     for (int i = template.length - 1; i > -1; i--) {
       for (int j = template[0].length - 1; j > -1; j--) {
         if (template[i][j] == 1)
-          enemies.add(new Enemy(coordinates, PT_ENEMY * gc.getDifficulty()));
+          enemies.add(new Enemy(coordinates, PT_ENEMY * (gc.getDifficulty() + 1)));
         coordinates[0]--;
       }
       coordinates[0] = 0;

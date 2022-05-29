@@ -52,6 +52,7 @@ public abstract class GameObject implements Constants {
   }
 
   /** Updates the object's position. */
+
   protected abstract void move();
 
   /**

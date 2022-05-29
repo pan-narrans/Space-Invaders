@@ -1,18 +1,16 @@
 package spaceInvaders;
 
-import java.util.Arrays;
-
-import dataManagement.DatabaseManager;
+// import dataManagement.DatabaseManager;
 import dataManagement.FilesManager;
 
 public class HighScoreController {
   // Database
-  private final String DB_NAME = "space-invaders";
-  private final String DB_TABLE = "high-scores";
-  private final String DB_USER = "root";
-  private final String DB_PASSWORD = "";
-  private boolean dbConnection;
-  private DatabaseManager dbManager;
+  // private final String DB_NAME = "space-invaders";
+  // private final String DB_TABLE = "high-scores";
+  // private final String DB_USER = "root";
+  // private final String DB_PASSWORD = "";
+  // private boolean dbConnection;
+  // private DatabaseManager dbManager;
 
   // File
   private final String FILE_NAME = "high-scores";
@@ -20,19 +18,20 @@ public class HighScoreController {
   private FilesManager fileManager;
 
   // High Scores
-  private final int SCORES_NUMBER = 5;
-  private final int SCORES_NAME_SIZE = 6;
-  private String[][] scores = new String[SCORES_NUMBER][2];
+  private final static int SCORES_NUMBER = 5;
+  public final static int SCORES_NAME_SIZE = 6;
+  private static String[][] scores = null;
 
   public HighScoreController() {
     fileManager = new FilesManager();
     fileManager.createFile(FILE_PATH);
-    setScores(retrieveScores());
+
+    if (scores == null)
+      setScores(retrieveScores());
   }
 
   /**
-   * Atspacingts to retrieve a saved scores array, should that fail, it will
-   * return a
+   * Attempts to retrieve a saved scores array, should that fail, it will return a
    * dummy array.
    * 
    * <ul>
@@ -74,11 +73,11 @@ public class HighScoreController {
    */
   public void setScores(String[][] values) {
     if (validateScores(values))
-      this.scores = values.clone();
+      HighScoreController.scores = values.clone();
     else
-      this.scores = generateMockValues().clone();
+      HighScoreController.scores = generateMockValues().clone();
 
-    saveScores(this.scores);
+    saveScores(HighScoreController.scores);
   }
 
   /** Saves the scores array to the database and the file. */
@@ -145,7 +144,7 @@ public class HighScoreController {
   /**
    * Prints the contents of the high scores matrix.
    */
-  public void printScores() {
+  public static void printScores() {
     StringBuilder sb = new StringBuilder();
     String highScore = " HIGH SCORES ";
     int spacing = SCORES_NAME_SIZE - highScore.length() / 2 + 2;
@@ -179,25 +178,25 @@ public class HighScoreController {
     return values;
   }
 
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  // TODO: Add the high scores functionality
+  private void resetScores() {
+    scores = generateMockValues();
+  }
+
+  public void addScore(String name, int score) {
+    if (isNewHighScore(score)) {
+      addNewHighScore(name, score);
+    }
+  }
 
   /**
    * Checks if a new high score had been achieved.
    * 
-   * @param values values matrix to check against
-   * @param score  score to check
+   * @param score score to check
    * @return Returns true if its a new high score, false if not
    */
-  public boolean isNewHighScore(String[][] values, int score) {
-    for (int i = 0; i < values.length; i++) {
-      if (score <= Integer.valueOf(values[i][1]))
+  private boolean isNewHighScore(int score) {
+    for (int i = 0; i < scores.length; i++) {
+      if (score >= Integer.valueOf(scores[i][1]))
         return true;
     }
     return false;
@@ -206,16 +205,16 @@ public class HighScoreController {
   /**
    * Adds a new record to the array, deleting the last record.
    * 
-   * @param values High scores matrix.
-   * @param name   Name to put on the wall of fame.
-   * @param score  Number of moves taken to beat the game.
+   * @param name  Name to put on the wall of fame.
+   * @param score Number of moves taken to beat the game.
    * @return Array with the new high score included
    */
-  public String[][] addNewHighScore(String[][] values, String name, int score) {
+  private void addNewHighScore(String name, int score) {
+    String[][] values = getScores();
     int position = 0;
 
     // Finds the position the new score would hold in the ranking
-    while (Integer.valueOf(values[position][1]) < score) {
+    while (Integer.valueOf(values[position][1]) > score) {
       position++;
     }
 
@@ -230,7 +229,6 @@ public class HighScoreController {
     values[position][0] = name;
     values[position][1] = Integer.toString(score);
 
-    return values;
   }
 
 }

@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 public class GameController implements Constants {
   private SpaceInvader spaceInvader;
+
   private Board board;
   private Player playerShip;
   private EnemyController enemyController;
@@ -18,15 +19,17 @@ public class GameController implements Constants {
   /** Default constructor */
   public GameController(SpaceInvader spaceInvader) {
     this.spaceInvader = spaceInvader;
+
     board = new Board(this);
     playerShip = new Player();
     enemyController = new EnemyController(this);
     gameObjects = new ArrayList<GameObject>();
 
-    gameObjects.add(playerShip);
     gameOver = false;
     difficulty = 0;
     score = 0;
+
+    gameObjects.add(playerShip);
   }
 
   public void update(char key) {
@@ -40,7 +43,7 @@ public class GameController implements Constants {
     if (gameOver) {
       board.printGameOver();
       if (key == 'd')
-        spaceInvader.endGame();
+        spaceInvader.endGame(score);
     }
   }
 
@@ -152,9 +155,13 @@ public class GameController implements Constants {
     return score;
   }
 
+  /**
+   * Increases {@link #difficulty} by 1 up until a max threshold.
+   */
   void increaseDifficulty() {
     if (difficulty < MAX_DIFFICULTY)
       difficulty++;
+    difficulty = 10;
   }
 
   int getDifficulty() {

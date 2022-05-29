@@ -1,5 +1,7 @@
 package spaceInvaders;
 
+// TODO: BUG on difficulty increase over 5 the enemies freeze in place
+
 public interface Constants {
 
   // Board
@@ -10,12 +12,12 @@ public interface Constants {
   // Player
   public final char SPR_PLAYER = 'X';
   public final int SPD_PLAYER = 1;
-  public final int PLR_SHOOT_DELAY = 5;
+  public final int PLR_SHOOT_DELAY = 2;
 
   // Enemy
   public final char SPR_ENEMY = 'Y';
   public final int SPD_ENEMY = 15;
-  public final int SPD_ENEMY_MIN = 10;
+  public final int SPD_ENEMY_MIN = 7;
   public final int PT_ENEMY = 5;
 
   // Bullet

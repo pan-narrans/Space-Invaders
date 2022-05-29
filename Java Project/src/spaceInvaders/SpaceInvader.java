@@ -1,10 +1,9 @@
 package spaceInvaders;
 
+import java.awt.AWTException;
 // Robot Imports
 import java.awt.Robot;
-import java.awt.AWTException;
 import java.awt.event.KeyEvent;
-
 // Basic functionalities
 import java.util.Scanner;
 
@@ -28,7 +27,7 @@ public class SpaceInvader implements Constants {
     }
 
     highScores = new HighScoreController();
-    menu = new Menu(this);
+    menu = new Menu(this, highScores);
   }
 
   public void start() {
@@ -49,8 +48,15 @@ public class SpaceInvader implements Constants {
     gameController = new GameController(this);
   }
 
-  void endGame() {
+  void endGame(int score) {
     inGame = false;
+    clearScreen();
+
+    // High Scores
+    System.out.println("Introduce tu nombre: ");
+    sc.nextLine();
+    String name = sc.nextLine();
+    highScores.addScore(name, score);
   }
 
   void exitApp() {
@@ -71,6 +77,11 @@ public class SpaceInvader implements Constants {
     robot.keyPress(KeyEvent.VK_ENTER);
     robot.keyRelease(KeyEvent.VK_ENTER);
     return Character.toLowerCase(sc.next().charAt(0));
+    // try {
+    // return Character.toLowerCase(sc.next().charAt(0));
+    // } catch (NoSuchElementException e) {
+    // return '.';
+    // }
   }
 
   /**

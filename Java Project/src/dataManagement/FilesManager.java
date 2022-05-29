@@ -62,7 +62,7 @@ public class FilesManager {
       result = in.readObject();
 
     } catch (Exception e) {
-
+      
       System.out.println("An error occurred whilst reading the file.");
 
     } finally {
