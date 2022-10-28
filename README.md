@@ -4,17 +4,15 @@ Space Invaders done in Java-17, played entirely through the console using the 'W
 
 ## Controls
 
-Controls in menu:  
-`w` : move up  
-`s` : move down  
-`d` : select  
-
-Controls in game:  
-`a` : move left  
-`d` : move right  
-`s` : shoot  
+| In menu:        | In game:         |
+| --------------- | ---------------- |
+| `w` : move up   | `a` : move left  |
+| `s` : move down | `d` : move right |
+| `d` : select    | `s` : shoot      |
 
 ## Screenshots
+
+Taken from the vscode build-in console.
 
 ![main-menu](img/main-menu.png)
 ![game screen](img/game-1.png)
